@@ -34,3 +34,11 @@ def crear_producto(producto: Producto):
         "stock": producto.stock,
         "mensaje": "Producto creado"
     }
+
+@app.put("/productos/{id}")
+def actualizar_producto(id: int, producto: Producto):
+    return database.actualizar_producto(id, producto.nombre, producto.precio, producto.categoria, producto.stock)
+
+@app.delete("/productos/{id}")
+def eliminar_producto(id: int):
+    return database.eliminar_producto(id)
