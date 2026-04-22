@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import database
 import pickle
 import numpy as np
+from scraper import obtener_datos_consumo
 
 app = FastAPI()
 
@@ -52,11 +53,8 @@ def eliminar_producto(id: int):
 def predecir(edad: int, ingresos: float, region: str = "CDMX"):
     datos = np.array([[edad, ingresos]])
     prediccion = modelo.predict(datos)[0]
-    
-    # Ajuste por región (Nielsen hace esto)
     factor_region = {"CDMX": 1.2, "Monterrey": 1.1, "Guadalajara": 1.0, "Provincia": 0.8}
     prediccion_ajustada = prediccion * factor_region.get(region, 1.0)
-    
     return {
         "edad": edad,
         "ingresos": ingresos,
@@ -64,4 +62,13 @@ def predecir(edad: int, ingresos: float, region: str = "CDMX"):
         "consumo_predicho": round(prediccion_ajustada, 2),
         "moneda": "MXN",
         "confianza": "85%"
+    }
+
+@app.get("/datos-consumo")
+def datos_consumo_region(region: str = "CDMX"):
+    datos = obtener_datos_consumo()
+    return {
+        "region": region,
+        "datos": datos["regiones"].get(region, {}),
+        "fecha_recoleccion": datos["fecha"]
     }
