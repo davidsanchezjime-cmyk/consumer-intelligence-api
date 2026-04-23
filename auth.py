@@ -1,9 +1,13 @@
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from pydantic import BaseModel
+from dotenv import load_dotenv
+import os
 
-SECRET_KEY = "tu_clave_secreta_cambia_esto_en_produccion"
-ALGORITHM = "HS256"
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY", "default_secret_key")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
 
 class Usuario(BaseModel):
     username: str
